@@ -17,6 +17,11 @@ from validate.format import check_file_format, min_entries_per_category, num_seg
 class TestValidadeFormat(unittest.TestCase):
     
     def test_error_message_return_and_return_type(self):
+        """
+        Tests whether the `error_message` function correctly returns a string
+        instance and its return type is `str`.
+
+        """
         line_num_unity = 1
         line_num_ten = 10
         line_num_hundred = 100
@@ -40,6 +45,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg_thousand, '(L1001) This is a unit test')
 
     def test_if_get_categories_content_return_correct_data_of_categories(self):
+        """
+        Tests if the `get_categories_content()` function returns the correct data
+        of categories and their corresponding line numbers for a given input of
+        API contents.
+
+        """
         fake_contents = [
             '### A',
             'API | Description | Auth | HTTPS | CORS |',
@@ -69,6 +80,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(res, ex_res)
 
     def test_if_check_alphabetical_order_return_correct_msg_error(self):
+        """
+        Tests if the `check_alphabetical_order` function returns correct error
+        messages for incorrect input lists.
+
+        """
         correct_lines = [
             '### A',
             'API | Description | Auth | HTTPS | CORS |',
@@ -118,6 +134,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msg, ex_err_msg)
     
     def test_check_title_with_correct_title(self):
+        """
+        Verifies that the `check_title` function returns an empty list when passed
+        a correct title.
+
+        """
         raw_title = '[A](https://www.ex.com)'
 
         err_msgs = check_title(0, raw_title)
@@ -127,6 +148,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msgs, [])
 
     def test_check_title_with_markdown_syntax_incorrect(self):
+        """
+        Verifies that a list of markdown-formatted error messages is returned when
+        an incorrect title syntax is provided, including an `(L001)` message with
+        the expected format.
+
+        """
         raw_title = '[A(https://www.ex.com)'
 
         err_msgs = check_title(0, raw_title)
@@ -140,6 +167,11 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_title_with_api_at_the_end_of_the_title(self):
+        """
+        Verifies that the given title does not end with "... API" and has a single
+        error message if it does.
+
+        """
         raw_title = '[A API](https://www.ex.com)'
 
         err_msgs = check_title(0, raw_title)
@@ -153,6 +185,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_description_with_correct_description(self):
+        """
+        Tests the `check_description` function's ability to generate high-quality
+        documentation for a given code by providing a correct description and
+        checking if the output is an empty list.
+
+        """
         desc = 'This is a fake description'
 
         err_msgs = check_description(0, desc)
@@ -162,6 +200,11 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msgs, [])
     
     def test_check_description_with_first_char_is_not_capitalized(self):
+        """
+        Checks that the first character of a given description is not capitalized
+        by generating an error message.
+
+        """
         desc = 'this is a fake description'
 
         err_msgs = check_description(0, desc)
@@ -176,6 +219,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
     
     def test_check_description_with_punctuation_in_the_end(self):
+        """
+        Tests the `check_description` function's ability to detect punctuation in
+        the end of a description. It provides a list of error messages as output
+        when there is punctuation in the end of the description.
+
+        """
         base_desc = 'This is a fake description'
         punctuation = r"""!"#$%&'*+,-./:;<=>?@[\]^_`{|}~"""
         desc_with_punc = [base_desc + punc for punc in punctuation]
@@ -195,6 +244,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_description_that_exceeds_the_character_limit(self):
+        """
+        Tests whether an error message is raised when a description exceeds a
+        maximum character limit.
+
+        """
         long_desc = 'Desc' * max_description_length
         long_desc_length = len(long_desc)
 
@@ -210,6 +264,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_auth_with_valid_auth(self):
+        """
+        Validates whether a given authentication object is valid by checking its
+        presence in an array of authentications keys and returning any errors as
+        a list.
+
+        """
         auth_valid = [f'`{auth}`' for auth in auth_keys if auth != 'No']
         auth_valid.append('No')
 
@@ -221,6 +281,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msgs, [])
 
     def test_check_auth_without_backtick(self):
+        """
+        Tests whether a list of authentication credentials contains a value that
+        is not enclosed with backticks.
+
+        """
         auth_without_backtick = [auth for auth in auth_keys if auth != 'No']
 
         for auth in auth_without_backtick:
@@ -236,6 +301,13 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_auth_with_invalid_auth(self):
+        """
+        Tests the `check_auth` function's behavior when the `auth` input is invalid,
+        either without or with backticks. It verifies that `err_msgs` is a list
+        containing two error messages, and that each error message has the expected
+        format.
+
+        """
         auth_invalid_without_backtick = ['Yes', 'yes', 'no', 'random', 'Unknown']
         auth_invalid_with_backtick = ['`Yes`', '`yes`', '`no`', '`random`', '`Unknown`']
 
@@ -269,6 +341,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_https_with_valid_https(self):
+        """
+        Verifies that a list of error messages is empty when checking the validity
+        of an HTTPS request with no errors.
+
+        """
         for https in https_keys:
             with self.subTest():
                 err_msgs = check_https(0, https)
@@ -277,6 +354,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msgs, [])
 
     def test_check_https_with_invalid_https(self):
+        """
+        Verifies that error messages are generated when providing an invalid HTTPS
+        option while checking for HTTPS compliance.
+
+        """
         invalid_https_keys = ['yes', 'no', 'Unknown', 'https', 'http']
 
         for https in invalid_https_keys:
@@ -292,6 +374,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_cors_with_valid_cors(self):
+        """
+        Verifies that check_cors() returns an empty list when given a valid CORS
+        configuration object and zero error messages.
+
+        """
         for cors in cors_keys:
             with self.subTest():
                 err_msgs = check_cors(0, cors)
@@ -300,6 +387,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msgs, [])
 
     def test_check_cors_with_invalid_cors(self):
+        """
+        Runs check_cors() with different invalid CORS options and asserts that an
+        error message is returned in each case.
+
+        """
         invalid_cors_keys = ['yes', 'no', 'unknown', 'cors']
 
         for cors in invalid_cors_keys:
@@ -315,6 +407,11 @@ class TestValidadeFormat(unittest.TestCase):
                 self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_entry_with_correct_segments(self):
+        """
+        Verifies that a given list of error messages is empty when checking an
+        entry against correct segments using the `check_entry()` function.
+
+        """
         correct_segments = ['[A](https://www.ex.com)', 'Desc', '`apiKey`', 'Yes', 'Yes']
 
         err_msgs = check_entry(0, correct_segments)
@@ -324,6 +421,11 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msgs, [])
 
     def test_check_entry_with_incorrect_segments(self):
+        """
+        Tests the `check_entry` function by providing incorrect input segments and
+        verifying the generated error messages match the expected ones.
+
+        """
         incorrect_segments = ['[A API](https://www.ex.com)', 'desc.', 'yes', 'yes', 'yes']
 
         err_msgs = check_entry(0, incorrect_segments)
@@ -345,6 +447,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msgs, expected_err_msgs)
 
     def test_check_file_format_with_correct_format(self):
+        """
+        Verifies that the input list has a correct format by checking if each line
+        is formatted as a numbered list with no leading or trailing spaces and all
+        elements are indented.
+
+        """
         correct_format = [
             '## Index',
             '* [A](#a)',
@@ -372,6 +480,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msgs, [])
 
     def test_check_file_format_with_category_header_not_added_to_index(self):
+        """
+        Tests the `check_file_format()` function by providing an incorrect format
+        and asserting that it returns a list of error messages, including a message
+        indicating that the category header was not added to the Index section.
+
+        """
         incorrect_format = [
             '## Index',
             '',
@@ -392,6 +506,11 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_file_format_with_category_without_min_entries(self):
+        """
+        Verifies that a category has at least a minimum number of entries in the
+        provided format file by checking for the correct syntax and formatting.
+
+        """
         incorrect_format = [
             '## Index',
             '* [A](#a)',
@@ -422,6 +541,12 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_file_format_entry_without_all_necessary_columns(self):
+        """
+        Tests whether an entry in a file has all the required columns. It takes
+        an incorrect file format as input and outputs an error message if any
+        columns are missing.
+
+        """
         incorrect_format = [
             '## Index',
             '* [A](#a)',
@@ -445,6 +570,11 @@ class TestValidadeFormat(unittest.TestCase):
         self.assertEqual(err_msg, expected_err_msg)
 
     def test_check_file_format_without_1_space_between_the_segments(self):
+        """
+        Tests if a given list of strings represents a file format that meets
+        specified requirements. It returns an error message if the format is incorrect.
+
+        """
         incorrect_format = [
             '## Index',
             '* [A](#a)',

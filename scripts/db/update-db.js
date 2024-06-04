@@ -9,8 +9,22 @@ const groupRowContent = require('../../utils/db/group-row-content')
 const separateTables = require('../../utils/db/separate-tables')
 const writeToFile = require('../../utils/db/write-to-file')
 
+/**
+ * @description Reads and parses a README file, creates lists of resources and
+ * categories, writes them to separate JSON files, and throws an error if any issue
+ * arises during the process.
+ */
 async function updateDB() {
     try {
+        /**
+         * @description Processes input `data`, checking for any errors (`err`) and storing
+         * the result (`readme`).
+         * 
+         * @param { object } err - result of reading the file contents, and it is thrown as
+         * an error if there was any issue during the reading process.
+         * 
+         * @param { object } data - data that is read from the file.
+         */
         const readme = fs.readFileSync('./README.md', 'utf-8', (err, data) => {
             if (err) throw err
             readme = data

@@ -24,7 +24,19 @@ def find_links_in_text(text: str) -> List[str]:
 
 
 def find_links_in_file(filename: str) -> List[str]:
-    """Find links in a file and return a list of URLs from text file."""
+    """
+    Reads the contents of a given file, finds the position of an index marker, and
+    then extracts the remaining content after that index. It returns a list of
+    links found within the extracted content.
+
+    Args:
+        filename (str): path and name of the text file from which the links are
+            to be extracted.
+
+    Returns:
+        List[str]: a list of hyperlinks found within the given text.
+
+    """
 
     with open(filename, mode='r', encoding='utf-8') as file:
         readme = file.read()
@@ -39,9 +51,18 @@ def find_links_in_file(filename: str) -> List[str]:
 
 
 def check_duplicate_links(links: List[str]) -> Tuple[bool, List]:
-    """Check for duplicated links.
+    """
+    Scans a list of links and identifies any duplicates by storing each link in a
+    seen dictionary and counting its occurrence. If there are any duplicates, they
+    are added to an array named 'duplicates'.
 
-    Returns a tuple with True or False and duplicate list.
+    Args:
+        links (List[str]): list of links that will be searched for duplication.
+
+    Returns:
+        Tuple[bool, List]: a tuple containing a boolean value (`has_duplicate`)
+        and an list of links with duplicates.
+
     """
 
     seen = {}
@@ -63,7 +84,13 @@ def check_duplicate_links(links: List[str]) -> Tuple[bool, List]:
 
 
 def fake_user_agent() -> str:
-    """Faking user agent as some hosting services block not-whitelisted UA."""
+    """
+    Returns a randomly selected user agent string from a given list.
+
+    Returns:
+        str: a randomly selected user agent string.
+
+    """
 
     user_agents = [
         'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1467.0 Safari/537.36',
@@ -77,6 +104,19 @@ def fake_user_agent() -> str:
 
 def get_host_from_link(link: str) -> str:
 
+    """
+    Splits a given link into its component parts, removing any unnecessary information
+    to reveal the underlying host name.
+
+    Args:
+        link (str): URL to be cleaned, and the function splits it into its constituent
+            parts: protocol, subdomain (if present), domain name, and root directory
+            (if present).
+
+    Returns:
+        str: a simplified URL without routes, arguments, or anchors.
+
+    """
     host = link.split('://', 1)[1] if '://' in link else link
 
     # Remove routes, arguments and anchors
@@ -93,24 +133,19 @@ def get_host_from_link(link: str) -> str:
 
 
 def has_cloudflare_protection(resp: Response) -> bool:
-    """Checks if there is any cloudflare protection in the response.
+    """
+    Takes an HTTP response object and checks if it contains specific Cloudflare
+    protection flags in its status code or server headers. If any of the flags are
+    found, the function returns `True`, otherwise it returns `False`.
 
-    Cloudflare implements multiple network protections on a given link,
-    this script tries to detect if any of them exist in the response from request.
+    Args:
+        resp (Response): HTTP response object that contains information such as
+            the status code, headers, and body.
 
-    Common protections have the following HTTP code as a response:
-        - 403: When host header is missing or incorrect (and more)
-        - 503: When DDOS protection exists
+    Returns:
+        bool: a boolean value indicating whether Cloudflare protection was detected
+        in the given response.
 
-    See more about it at:
-        - https://support.cloudflare.com/hc/en-us/articles/115003014512-4xx-Client-Error
-        - https://support.cloudflare.com/hc/en-us/articles/115003011431-Troubleshooting-Cloudflare-5XX-errors
-        - https://www.cloudflare.com/ddos/
-        - https://superuser.com/a/888526
-
-    Discussions in issues and pull requests:
-        - https://github.com/public-apis/public-apis/pull/2409
-        - https://github.com/public-apis/public-apis/issues/2960 
     """
 
     code = resp.status_code
@@ -150,14 +185,19 @@ def has_cloudflare_protection(resp: Response) -> bool:
 
 
 def check_if_link_is_working(link: str) -> Tuple[bool, str]:
-    """Checks if a link is working.
+    """
+    Checks if a given link is valid and returns a tuple containing a boolean value
+    indicating whether an error occurred and a string containing the error message
+    if an error occurs.
 
-    If an error is identified when the request for the link occurs,
-    the return will be a tuple with the first value True and the second
-    value a string containing the error message.
+    Args:
+        link (str): URL to be checked for errors.
 
-    If no errors are identified, the return will be a tuple with the
-    first value False and the second an empty string.
+    Returns:
+        Tuple[bool, str]: a tuple of `(has_error, error_message)`, where `has_error`
+        indicates whether there was an error checking the link and `error_message`
+        provides a brief description of the error.
+
     """
 
     has_error = False
@@ -199,6 +239,17 @@ def check_if_link_is_working(link: str) -> Tuple[bool, str]:
 
 
 def check_if_list_of_links_are_working(list_of_links: List[str]) -> List[str]:
+    """
+    Checks if links are functional by utilizing a given method and appends any
+    found errors to an array if they do not work.
+
+    Args:
+        list_of_links (List[str]): list of links to be checked for errors.
+
+    Returns:
+        List[str]: a list of error messages if any of the links are not working.
+
+    """
     error_messages = []
     for link in list_of_links:
         has_error, error_message = check_if_link_is_working(link)
@@ -211,6 +262,15 @@ def check_if_list_of_links_are_working(list_of_links: List[str]) -> List[str]:
 
 def start_duplicate_links_checker(links: List[str]) -> None:
 
+    """
+    Checks if any two or more links within a given list are the same by creating
+    a list called `dublicates_links`. If any link appears multiple times, an error
+    message is output and program terminated.
+
+    Args:
+        links (List[str]): list of links to be checked for duplicates.
+
+    """
     print('Checking for duplicate links...')
 
     has_duplicate_link, duplicates_links = check_duplicate_links(links)
@@ -228,6 +288,15 @@ def start_duplicate_links_checker(links: List[str]) -> None:
 
 def start_links_working_checker(links: List[str]) -> None:
 
+    """
+    Checks if a given list of links are working by utilizing the
+    `check_if_list_of_links_are_working()` function and outputs any errors that
+    may be present.
+
+    Args:
+        links (List[str]): list of links to be checked for proper functionality.
+
+    """
     print(f'Checking if {len(links)} links are working...')
 
     errors = check_if_list_of_links_are_working(links)
@@ -244,6 +313,16 @@ def start_links_working_checker(links: List[str]) -> None:
 
 def main(filename: str, only_duplicate_links_checker: bool) -> None:
 
+    """
+    Performs a link check in given file `filename`. It first identifies potential
+    duplicates and then checks their working status.
+
+    Args:
+        filename (str): filename being scanned for links.
+        only_duplicate_links_checker (bool): checker that is used to find only
+            duplicate links among the provided links.
+
+    """
     links = find_links_in_file(filename)
 
     start_duplicate_links_checker(links)
